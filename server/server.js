@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(require("./routes/index"))
 
 //conexion con mongodb
-mongoose.connect(process.env.urlDB, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
+mongoose.connect(process.env.urlDB, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false },
     (err, res) => {
         if (err) throw new Error(err);
         console.log("Base de datos Online")

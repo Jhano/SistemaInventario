@@ -23,18 +23,92 @@ app.get("/usuarios", (req, res) => {
                     err
                 })
             }
-            Usuario.count({ estado: true }, (err, countUsuarios) => {
+            Usuario.countDocuments({ estado: true }, (err, countUsuarios) => {
+                if (err) {
+                    return res.status(400).json({
+                        ok: false,
+                        err
+                    })
+                }
                 res.json({
                     ok: true,
                     usuarios,
                     cuantos: countUsuarios
                 })
+
+
             })
 
         })
-
 })
 
+app.post("/usuarios", (req, res) => {
+    let body = req.body;
+
+    let usuario = new Usuario({
+        nombre: body.nombre,
+        email: body.email,
+        password: bcrypt.hashSync(body.password, 10),
+        role: body.role
+    });
+
+    usuario.save((err, usuarioDB) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
+        res.json({
+            ok: true,
+            usuario: usuarioDB
+        })
+    })
+})
+
+
+app.put("/usuarios/:id", (req, res) => {
+    let body = _.pick(req.body, ["nombre", "email", "img", "role", "estado"]);
+    let id = req.params.id;
+
+    Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, usuarioDB) => {
+
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err,
+                message: "El id ingresado no existe"
+            })
+        }
+
+        res.json({
+            ok: true,
+            usuario: usuarioDB
+        })
+    })
+})
+
+app.delete("/usuarios/:id", (req, res) => {
+    let id = req.params.id;
+    let cambiarEstado = {
+        estado: false,
+    }
+
+    Usuario.findByIdAndUpdate(id, cambiarEstado, { new: true, runValidators: true }, (err, usuarioStatus) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err,
+                message: "El id ingresado no existe"
+            })
+        }
+        res.json({
+            ok: true,
+            usuarios: usuarioStatus
+        })
+    })
+
+})
 
 
 module.exports = app;

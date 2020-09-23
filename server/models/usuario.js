@@ -42,7 +42,7 @@ let usuarioSchema = new Schema({
 
 
 //transformar usuarioSchema a un objeto para su manipulacion
-usuarioSchema.methods.toJSON = () => {
+usuarioSchema.methods.toJSON = function() {
     let user = this;
     let userObject = user.toObject();
     delete userObject.password;

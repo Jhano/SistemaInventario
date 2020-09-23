@@ -25,10 +25,11 @@ process.env.SEED = process.env.SEED || "secret-seed-desarrollo" //creo que esto 
 let urlDB;
 
 if (process.env.NODE_ENV === "dev") {
-    urlDB = "mongodb+srv://Kuyen:ZTCOMzqEj1oHTrAw@sistemainventario.ziuaw.mongodb.net/Kuyen?retryWrites=true&w=majority"
+    urlDB = "mongodb://localhost:27017/Kuyen"
 } else {
-    urlDB = process.env.MONGO_URL;
+    urlDB = process.env.MONGODB_URI;
 }
 
+//mongodb+srv://Kuyen:ZTCOMzqEj1oHTrAw@sistemainventario.ziuaw.mongodb.net/Kuyen?retryWrites=true&w=majority
 
 process.env.urlDB = urlDB;
