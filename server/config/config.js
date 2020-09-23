@@ -17,7 +17,7 @@ process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30
 //==================
 //SEED de autentificacion
 //==================
-process.env.SEED = process.env.SEED || "secret-seed-desarrollo" //creo que esto es solo para heruko, revisar despuesssss
+process.env.SEED = process.env.SEED || "secret-seed-desarrollo"
 
 //==================
 //Base de datos
