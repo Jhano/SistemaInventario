@@ -27,7 +27,7 @@ let urlDB;
 if (process.env.NODE_ENV === "dev") {
     urlDB = "mongodb://localhost:27017/Kuyen"
 } else {
-    urlDB = process.env.MONGODB_URI;
+    urlDB = "mongodb+srv://Kuyen:ZTCOMzqEj1oHTrAw@sistemainventario.ziuaw.mongodb.net/Kuyen?retryWrites=true&w=majority";
 }
 
 //mongodb+srv://Kuyen:ZTCOMzqEj1oHTrAw@sistemainventario.ziuaw.mongodb.net/Kuyen?retryWrites=true&w=majority
