@@ -4,6 +4,8 @@
 /node_modules
 /.pnp
 .pnp.js
+/src/shards-dashboard
+/src/components
 
 # testing
 /coverage
