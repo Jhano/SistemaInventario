@@ -20,6 +20,7 @@ import {GoogleLogout} from 'react-google-login';
 
 
 
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -54,6 +55,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const setSettings = (body) => {
+  let values = body;
+  console.log(values);
+  const settings = {
+    method: 'POST',
+    headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(values)//values: {email, password}
+  };
+  return settings;
+}
+
 export default function Login() {
   const classes = useStyles();
 
@@ -63,26 +78,15 @@ export default function Login() {
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
-  
-
     e.preventDefault();
-      const settings = {
-          method: 'POST',
-          headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({email, password})//values: {email, password}
-      };
-
       try {
-          const fetchResponse = await fetch('http://localhost:3000/login', settings);
+          const fetchResponse = await fetch('http://localhost:3000/login', setSettings({email, password}));
           const data = await fetchResponse.json();
+          console.log(data);
           //{ok, err}
           if(data.ok){
             //  localStorage.setItem('loggeado', true);
             // sessionStorage.setItem('token', x.token):
-    
             history.push('/asignatura');
             window.location.reload();
             setValidated(true);
@@ -102,32 +106,19 @@ export default function Login() {
     const name = event.target.id;
     console.log(value);
     
-    if(name === 'email'){
-        setEmail(value)
-    }else{
-      setPassword(value)
-    }
+    name === 'email'? setEmail(value) : setPassword(value);
+    
   }
 
   const responseGoogle = async (googleUser) => {
     var id_token = googleUser.getAuthResponse().id_token;
-    console.log(id_token);
-    const settings = {
-      method: 'POST',
-      headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({id_token})//values: {email, password}
-      
-    };
     try {
-      const fetchResponse = await fetch('http://localhost:3000/google', settings);
+      const fetchResponse = await fetch('http://localhost:3000/google', setSettings({id_token}));
       const data = await fetchResponse.json();
       if(data.ok){
           history.push('/asignatura');
           window.location.reload();
-            setValidated(true);
+          setValidated(true);
       }else{
         setValidated(false);
         setError(data.err.message);

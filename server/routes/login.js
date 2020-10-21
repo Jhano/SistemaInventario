@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Usuario = require("../models/usuario");
 const { OAuth2Client } = require('google-auth-library');
-const usuario = require("../../../../../../../../xampp/htdocs/node/07-RestServer/server/models/usuario");
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 
