@@ -1,11 +1,13 @@
 const express = require("express");
-const Medicamento = require("../models/medicamentos");
+const Venta = require("../models/ventas");
 const { verificaToken, verificaAdminRole } = require("../middlewares/authentication");
+const _ = require("underscore");
+
 
 
 const app = express();
 
-app.get("/medicamentos", [verificaToken], (req, res) => {
+app.get("/ventas", [verificaToken], (req, res) => {
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -13,18 +15,21 @@ app.get("/medicamentos", [verificaToken], (req, res) => {
     let limite = req.query.limite || 0;
     limite = Number(limite);
 
-    Medicamento.find({ estado: true })
-        .sort('nombre')
+    Venta.find({ estado: true })
+        .sort('fechaVenta') // los ordena por ese atributo
+        .populate('usuario', 'nombre email')
+        .populate('accesorio', 'nombre precio descripcion')
+        .populate('medicamento', 'nombre precio descripcion')
         .skip(desde)
         .limit(limite)
-        .exec((err, medicamentos) => {
+        .exec((err, ventas) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
                     err
                 })
             }
-            Medicamento.countDocuments({ estado: true }, (err, countMedicamentos) => {
+            Venta.countDocuments({ estado: true }, (err, countVentas) => {
                 if (err) {
                     return res.status(400).json({
                         ok: false,
@@ -33,24 +38,24 @@ app.get("/medicamentos", [verificaToken], (req, res) => {
                 }
                 res.json({
                     ok: true,
-                    medicamentos,
-                    cuantos: countMedicamentos
+                    ventas,
+                    cuantos: countVentas
                 })
             })
         })
 })
 
-app.get("/medicamentos/:id", [verificaToken], (req, res) => {
+app.get("/ventas/:id", [verificaToken], (req, res) => {
     let id = req.params.id;
 
-    Medicamento.findById(id, (err, medicamentoBD) => {
+    Venta.findById(id, (err, ventaBD) => {
         if (err) {
             res.status(400).json({
                 ok: false,
                 err
             })
         }
-        if (!medicamentoBD) {
+        if (!ventaBD) {
             res.status(500).json({
                 ok: false,
                 message: "El ID no existe",
@@ -61,18 +66,18 @@ app.get("/medicamentos/:id", [verificaToken], (req, res) => {
 
         res.json({
             ok: true,
-            medicamento: medicamentoBD
+            venta: ventaBD
         })
     })
 })
 
-app.get("/medicamentos/buscar/:termino", [verificaToken], (req, res) => {
+app.get("/ventas/buscar/:termino", [verificaToken], (req, res) => {
     let termino = req.params.termino;
 
     let regex = new RegExp(termino, 'i'); //expresion regular para buscar; "i" significa que no respeta mayusculas ni minusculas
 
-    Medicamento.find({ estado: true, nombre: regex })
-        .exec((err, medicamentoBD) => {
+    Venta.find({ estado: true, fechaVenta: regex })
+        .exec((err, ventaBD) => {
             if (err) {
                 res.status(400).json({
                     ok: false,
@@ -81,29 +86,24 @@ app.get("/medicamentos/buscar/:termino", [verificaToken], (req, res) => {
             }
             res.json({
                 ok: true,
-                medicamento: medicamentoBD
+                venta: ventaBD
             })
         })
 
 })
 
-app.post("/medicamentos", [verificaToken, verificaAdminRole], (req, res) => {
+app.post("/ventas", [verificaToken], (req, res) => {
     let body = req.body;
+    let usuario = req.usuario;
 
-    let medicamento = new Medicamento({
-        nombre: body.nombre,
-        img: body.img,
-        tipoMascota: body.tipoMascota,
-        razaMascota: body.razaMascota,
-        sizeMascota: body.sizeMascota,
-        pesoMascota: body.pesoMascota,
-        marca: body.marca,
-        categoria: body.categoria,
-        descripcion: body.descripcion,
-        precio: body.precio
+    let venta = new Venta({
+        usuario: usuario._id,
+        medicamento: body.medicamento,
+        accesorio: body.accesorio,
+        precio: body.precio,
     });
 
-    medicamento.save((err, medicamentoBD) => {
+    Venta.save((err, ventaBD) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -112,16 +112,16 @@ app.post("/medicamentos", [verificaToken, verificaAdminRole], (req, res) => {
         }
         res.status(201).json({
             ok: true,
-            medicamento: medicamentoBD
+            venta: ventaBD
         })
     })
 })
 
-app.put("/medicamentos/:id", [verificaToken, verificaAdminRole], (req, res) => {
-    let body = req.body;
+app.put("/ventas/:id", [verificaToken], (req, res) => {
+    let body = _.pick(req.body, ["medicamento", "accesorio", "precio", "fechaVenta"]);;
     let id = req.params.id;
 
-    Medicamento.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, medicamentoBD) => {
+    Venta.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, ventaBD) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -131,18 +131,16 @@ app.put("/medicamentos/:id", [verificaToken, verificaAdminRole], (req, res) => {
         }
         res.json({
             ok: true,
-            medicamentoBD
+            ventaBD
         })
     })
 })
 
-app.delete("/medicamentos/:id", [verificaToken, verificaAdminRole], (req, res) => {
+app.delete("/ventas/:id", [verificaToken], (req, res) => {
     let id = req.params.id;
-    let cambiarEstado = {
-        estado: false
-    }
 
-    Medicamento.findByIdAndUpdate(id, cambiarEstado, { new: true, runValidators: true }, (err, medicamentoStatus) => {
+
+    Venta.findByIdAndRemove(id, { new: true, runValidators: true }, (err, ventaRemove) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -152,7 +150,7 @@ app.delete("/medicamentos/:id", [verificaToken, verificaAdminRole], (req, res) =
         }
         res.json({
             ok: true,
-            medicamentoStatus
+            ventaRemove
         })
     })
 })

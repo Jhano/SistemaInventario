@@ -98,6 +98,7 @@ app.post("/accesorios", [verificaToken, verificaAdminRole], (req, res) => {
         pesoMascota: body.pesoMascota,
         marca: body.marca,
         categoria: body.categoria,
+        descripcion: body.descripcion,
         precio: body.precio
     });
 

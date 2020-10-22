@@ -37,6 +37,10 @@ let accesorioSchema = new Schema({
         type: Number,
         required: [true, "El precio es necesario"]
     },
+    descripcion: {
+        type: String,
+        required: false
+    },
     estado: {
         type: Boolean,
         default: true

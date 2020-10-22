@@ -37,6 +37,10 @@ let medicamentoSchema = new Schema({
         type: String,
         required: false
     },
+    descripcion: {
+        type: String,
+        required: false
+    },
     precio: {
         type: Number,
         required: [true, "El precio es necesario"]
