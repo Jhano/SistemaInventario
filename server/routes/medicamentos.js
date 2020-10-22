@@ -39,7 +39,7 @@ app.get("/medicamentos", [verificaToken], (req, res) => {
         })
 })
 
-app.post("/medicamentos", [verificaToken], (req, res) => {
+app.post("/medicamentos", [verificaToken, verificaAdminRole], (req, res) => {
     let body = req.body;
 
     let medicamento = new Medicamento({
@@ -68,7 +68,7 @@ app.post("/medicamentos", [verificaToken], (req, res) => {
     })
 })
 
-app.put("/medicamentos/:id", [verificaToken], (req, res) => {
+app.put("/medicamentos/:id", [verificaToken, verificaAdminRole], (req, res) => {
     let body = req.body;
     let id = req.params.id;
 
@@ -87,7 +87,7 @@ app.put("/medicamentos/:id", [verificaToken], (req, res) => {
     })
 })
 
-app.delete("/medicamentos/:id", [verificaToken], (req, res) => {
+app.delete("/medicamentos/:id", [verificaToken, verificaAdminRole], (req, res) => {
     let id = req.params.id;
     let cambiarEstado = {
         estado: false

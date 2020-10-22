@@ -4,10 +4,10 @@ const uniqueValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 
 let formSchema = new Schema({
-    // idUsuario: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "usuario",
-    // },
+    idUsuario: {
+        type: Schema.Types.ObjectId,
+        ref: "usuario",
+    },
     nombreCliente: {
         type: String,
         required: [true, "El nombre del cliente es necesario"]

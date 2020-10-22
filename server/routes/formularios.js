@@ -2,6 +2,7 @@ const express = require("express");
 const Formulario = require("../models/formularios");
 const { verificaToken, verificaAdminRole } = require("../middlewares/authentication");
 const _ = require("underscore");
+const jwt = require("jsonwebtoken");
 
 
 const app = express();
@@ -42,9 +43,11 @@ app.get("/formularios", [verificaToken], (req, res) => {
 
 app.post("/formularios", [verificaToken], (req, res) => {
     let body = req.body;
+    let usuario = req.usuario;
 
     let formulario = new Formulario({
         nombreCliente: body.nombreCliente,
+        idUsuario: usuario._id,
         tipoMascota: body.tipoMascota,
         fechaAgendada: body.fechaAgendada,
         hora: body.hora,
