@@ -14,7 +14,7 @@ app.get("/usuarios", verificaToken, (req, res) => {
     let limite = req.query.limite || 0;
     limite = Number(limite);
 
-    Usuario.find({ estado: true }, "nombre email role estado google img") // filtra por estado: true, muestra los parametros entre """
+    Usuario.find({ estado: true }, "nombre email role estado google img") // filtra por estado: true, muestra los parametros entre ""
         .skip(desde)
         .limit(limite)
         .exec((err, usuarios) => {

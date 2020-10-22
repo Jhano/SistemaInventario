@@ -14,6 +14,7 @@ app.get("/accesorios", [verificaToken], (req, res) => {
     limite = Number(limite);
 
     Accesorio.find({ estado: true })
+        .sort('nombre')
         .skip(desde)
         .limit(limite)
         .exec((err, accesorios) => {
@@ -39,6 +40,53 @@ app.get("/accesorios", [verificaToken], (req, res) => {
         })
 })
 
+app.get("/accesorios/:id", [verificaToken], (req, res) => {
+    let id = req.params.id;
+
+    Accesorio.findById(id, (err, accesorioBD) => {
+        if (err) {
+            res.status(400).json({
+                ok: false,
+                err
+            })
+        }
+        if (!accesorioBD) {
+            res.status(500).json({
+                ok: false,
+                message: "El ID no existe",
+                err
+
+            })
+        }
+
+        res.json({
+            ok: true,
+            accesorio: accesorioBD
+        })
+    })
+})
+
+app.get("/accesorios/buscar/:termino", [verificaToken], (req, res) => {
+    let termino = req.params.termino;
+
+    let regex = new RegExp(termino, 'i'); //expresion regular para buscar; "i" significa que no respeta mayusculas ni minusculas
+
+    Accesorio.find({ estado: true, nombre: regex })
+        .exec((err, accesorioBD) => {
+            if (err) {
+                res.status(400).json({
+                    ok: false,
+                    err
+                })
+            }
+            res.json({
+                ok: true,
+                accesorio: accesorioBD
+            })
+        })
+
+})
+
 app.post("/accesorios", [verificaToken, verificaAdminRole], (req, res) => {
     let body = req.body;
 
@@ -60,7 +108,7 @@ app.post("/accesorios", [verificaToken, verificaAdminRole], (req, res) => {
                 err
             })
         }
-        res.json({
+        res.status(201).json({
             ok: true,
             accesorio: accesorioBD
         })

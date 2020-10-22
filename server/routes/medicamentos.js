@@ -14,6 +14,7 @@ app.get("/medicamentos", [verificaToken], (req, res) => {
     limite = Number(limite);
 
     Medicamento.find({ estado: true })
+        .sort('nombre')
         .skip(desde)
         .limit(limite)
         .exec((err, medicamentos) => {
@@ -39,6 +40,53 @@ app.get("/medicamentos", [verificaToken], (req, res) => {
         })
 })
 
+app.get("/medicamentos/:id", [verificaToken], (req, res) => {
+    let id = req.params.id;
+
+    Medicamento.findById(id, (err, medicamentoBD) => {
+        if (err) {
+            res.status(400).json({
+                ok: false,
+                err
+            })
+        }
+        if (!medicamentoBD) {
+            res.status(500).json({
+                ok: false,
+                message: "El ID no existe",
+                err
+
+            })
+        }
+
+        res.json({
+            ok: true,
+            medicamento: medicamentoBD
+        })
+    })
+})
+
+app.get("/medicamentos/buscar/:termino", [verificaToken], (req, res) => {
+    let termino = req.params.termino;
+
+    let regex = new RegExp(termino, 'i'); //expresion regular para buscar; "i" significa que no respeta mayusculas ni minusculas
+
+    Medicamento.find({ estado: true, nombre: regex })
+        .exec((err, medicamentoBD) => {
+            if (err) {
+                res.status(400).json({
+                    ok: false,
+                    err
+                })
+            }
+            res.json({
+                ok: true,
+                medicamento: medicamentoBD
+            })
+        })
+
+})
+
 app.post("/medicamentos", [verificaToken, verificaAdminRole], (req, res) => {
     let body = req.body;
 
@@ -61,7 +109,7 @@ app.post("/medicamentos", [verificaToken, verificaAdminRole], (req, res) => {
                 err
             })
         }
-        res.json({
+        res.status(201).json({
             ok: true,
             medicamento: medicamentoBD
         })
