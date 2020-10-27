@@ -7,5 +7,7 @@ app.use(require("./medicamentos"));
 app.use(require("./accesorios"));
 app.use(require("./formularios"));
 app.use(require("./ventas"));
+app.use(require("./uploads"));
+app.use(require("./imagenes"));
 
 module.exports = app;

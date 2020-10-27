@@ -92,7 +92,6 @@ app.post("/medicamentos", [verificaToken, verificaAdminRole], (req, res) => {
 
     let medicamento = new Medicamento({
         nombre: body.nombre,
-        img: body.img,
         tipoMascota: body.tipoMascota,
         razaMascota: body.razaMascota,
         sizeMascota: body.sizeMascota,

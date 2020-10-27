@@ -92,7 +92,6 @@ app.post("/accesorios", [verificaToken, verificaAdminRole], (req, res) => {
 
     let accesorio = new Accesorio({
         nombre: body.nombre,
-        img: body.img,
         tipoMascota: body.tipoMascota,
         sizeMascota: body.sizeMascota,
         pesoMascota: body.pesoMascota,

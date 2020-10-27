@@ -15,6 +15,8 @@ app.use(bodyParser.json());
 //Solicitud de origen cruzado de bloqueo
 app.use(cors());
 
+
+
 //configuarion global de rutas
 app.use(require("./routes/index"))
 
